@@ -3,8 +3,20 @@ import requests
 import os
 import re
 from datetime import datetime
+from flask import Flask
+import threading
 
-# Config
+# --- Flask Keep-Alive Server ---
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Axon Case Assigner is running."
+
+def run_server():
+    app.run(host="0.0.0.0", port=8080)
+
+# --- Axon Polling Logic ---
 AXON_API_KEY = os.environ.get("AXON_API_KEY")
 AXON_AGENCY_ID = os.environ.get("AXON_AGENCY_ID")
 AXON_BASE_URL = "https://api.evidence.com/api/v1"
@@ -83,4 +95,5 @@ def main_loop():
         time.sleep(POLL_INTERVAL)
 
 if __name__ == "__main__":
+    threading.Thread(target=run_server).start()
     main_loop()
