@@ -1,3 +1,4 @@
+import time
 import requests
 import os
 import re
@@ -7,6 +8,7 @@ from datetime import datetime
 AXON_API_KEY = os.environ.get("AXON_API_KEY")
 AXON_AGENCY_ID = os.environ.get("AXON_AGENCY_ID")
 AXON_BASE_URL = "https://api.evidence.com/api/v1"
+POLL_INTERVAL = 60  # in seconds
 
 def get_headers():
     return {
@@ -64,18 +66,21 @@ def assign_internal_number(case, number):
     except Exception as e:
         print(f"❌ Failed to assign number to case {case_id}: {e}")
 
-def run_once():
-    print(f"🚀 Running internal number assigner at {datetime.now().isoformat()}")
-    cases = get_recent_cases()
-    current_year = datetime.now().year % 100
-    max_iter = find_max_iterator(cases, current_year)
-    print(f"📈 Current max internal number for year {current_year}: {max_iter:05d}")
+def main_loop():
+    while True:
+        print(f"🔁 Polling at {datetime.now().isoformat()}")
+        cases = get_recent_cases()
+        current_year = datetime.now().year % 100
+        max_iter = find_max_iterator(cases, current_year)
+        print(f"📈 Current max internal number for year {current_year}: {max_iter:05d}")
 
-    for case in cases:
-        title = case["attributes"].get("title", "")
-        if not is_number_assigned(title, current_year):
-            max_iter += 1
-            assign_internal_number(case, max_iter)
+        for case in cases:
+            title = case["attributes"].get("title", "")
+            if not is_number_assigned(title, current_year):
+                max_iter += 1
+                assign_internal_number(case, max_iter)
+
+        time.sleep(POLL_INTERVAL)
 
 if __name__ == "__main__":
-    run_once()
+    main_loop()
