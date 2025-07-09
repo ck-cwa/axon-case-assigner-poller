@@ -1,0 +1,9 @@
+{
+  "build": {
+    "env": {
+      "AXON_API_KEY": "",
+      "AXON_AGENCY_ID": ""
+    }
+  },
+  "start": "python poll_assigner.py"
+}
