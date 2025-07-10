@@ -27,7 +27,7 @@ def get_headers():
         "Authorization": f"Token {AXON_API_KEY}",
         "Content-Type": "application/json"
     }
-
+print(f"🔐 Auth Header: {headers['Authorization']}")
 def get_recent_cases():
     url = f"{AXON_BASE_URL}/agencies/{AXON_AGENCY_ID}/cases"
     try:
